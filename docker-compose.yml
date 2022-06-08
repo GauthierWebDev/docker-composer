@@ -1,0 +1,35 @@
+services:
+  php:
+    container_name: php
+    build:
+      context: .
+      dockerfile: php.dockerfile
+    volumes:
+      - ./src:/var/www/html/public
+
+  nginx:
+    container_name: nginx-server
+    build:
+      context: .
+      dockerfile: nginx.dockerfile
+    ports:
+      - 80:80
+    volumes:
+      - ./src:/var/www/html/public
+    depends_on:
+      - php
+      - mariadb
+
+  mariadb:
+    container_name: mariadb
+    image: mariadb:10.5
+    ports:
+      - 3306:3306
+    environment:
+      MARIADB_USER: lateth
+      MARIADB_PASSWORD: lateth
+      MARIADB_ROOT_SECRET: secret
+      MARIADB_ROOT_PASSWORD: secret
+      MARIADB_DATABASE: docker
+    volumes:
+      - ./mysql:/var/lib/mysql
